@@ -29,6 +29,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Case Post ID is required" }, { status: 400 });
     }
 
+    const targetCase = await prisma.casePost.findUnique({ where: { id: casePostId } });
+    if (!targetCase) {
+      return NextResponse.json({ message: "Case not found" }, { status: 404 });
+    }
+
     const existingReaction = await prisma.caseReaction.findUnique({
       where: {
         doctorId_casePostId: {

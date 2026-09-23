@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 import { sendSMS } from "@/lib/sms";
@@ -40,8 +41,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Doctor not found" }, { status: 404 });
     }
 
-    // Generate 6-digit OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate 6-digit OTP securely
+    const otpCode = crypto.randomInt(100000, 999999).toString();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Save temporarily in db
@@ -55,15 +56,14 @@ export async function POST(req: Request) {
 
     // Send SMS
     const smsResult = await sendSMS(phoneNumber, `Your MedConnect 2FA verification code is: ${otpCode}`);
-    console.log(`[2FA SMS Request] Sent code ${otpCode} to ${phoneNumber}. Success: ${smsResult.success}`);
 
     // Send Email as Backup
     try {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: process.env.SMTP_EMAIL || "muhammad.okasha2146@gmail.com",
-          pass: process.env.SMTP_PASSWORD || "uzzr kdog fkte ntzd",
+          user: process.env.SMTP_EMAIL,
+          pass: process.env.SMTP_PASSWORD,
         },
       });
 

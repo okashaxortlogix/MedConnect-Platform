@@ -157,8 +157,14 @@ export default function MessagesListPage() {
                           <button onClick={async (e) => { 
                             e.stopPropagation(); 
                             if(confirm("Clear all messages in this chat?")) {
-                              await fetch(`/api/messages/${conv.id}`, { method: 'DELETE' });
-                              fetchConversations();
+                              try {
+                                const res = await fetch(`/api/messages/${conv.id}`, { method: 'DELETE' });
+                                if (!res.ok) throw new Error("Failed");
+                                fetchConversations();
+                                toast.success("Chat cleared");
+                              } catch(e) {
+                                toast.error("Error clearing chat");
+                              }
                             }
                             setActiveMenu(null); 
                           }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -183,9 +189,16 @@ export default function MessagesListPage() {
                           <button onClick={async (e) => { 
                             e.stopPropagation(); 
                             if(confirm("Are you sure you want to delete this chat completely?")) {
-                              const res = await fetch(`/api/conversations/${conv.id}`, { method: 'DELETE' });
-                              if(res.ok) {
-                                setConversations(prev => prev.filter(c => c.id !== conv.id)); 
+                              try {
+                                const res = await fetch(`/api/conversations/${conv.id}`, { method: 'DELETE' });
+                                if(res.ok) {
+                                  setConversations(prev => prev.filter(c => c.id !== conv.id)); 
+                                  toast.success("Chat deleted");
+                                } else {
+                                  throw new Error("Failed");
+                                }
+                              } catch(e) {
+                                toast.error("Error deleting chat");
                               }
                             }
                             setActiveMenu(null); 

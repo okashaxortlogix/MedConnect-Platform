@@ -25,10 +25,15 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const filterDoctorId = searchParams.get("doctorId");
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const skip = (page - 1) * limit;
 
     const videos = await prisma.videoPost.findMany({
       where: filterDoctorId ? { doctorId: filterDoctorId } : undefined,
       orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
       include: {
         doctor: {
           select: {
@@ -59,10 +64,9 @@ export async function POST(req: Request) {
     if (!doctor) {
       return NextResponse.json({ message: "Doctor not found" }, { status: 404 });
     }
-    // Temporarily relaxed verification requirement for testing
-    // if (doctor.verificationStatus !== "VERIFIED") {
-    //   return NextResponse.json({ message: "You must be fully verified to upload a video" }, { status: 403 });
-    // }
+    if (doctor.verificationStatus !== "VERIFIED") {
+      return NextResponse.json({ message: "You must be fully verified to upload a video" }, { status: 403 });
+    }
 
     const body = await req.json();
     const { title, description, videoUrl, thumbnailUrl } = body;

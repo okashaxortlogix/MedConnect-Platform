@@ -42,7 +42,7 @@ export async function GET(req: Request, props: { params: Promise<{ id: string }>
         verificationStatus: true,
         isProfilePrivate: true,
         cmeCertificates: {
-          include: { course: true }
+          select: { id: true, course: true, issuedAt: true }
         }
       }
     });

@@ -4,16 +4,17 @@ import { prisma } from "@/lib/prisma";
 
 export async function getUserIdFromToken() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const tokenCookie = cookieStore.get("medconnect_token")?.value;
+  const token = tokenCookie;
 
   if (!token) return null;
 
   try {
     const verified = await jwtVerify(
       token,
-      new TextEncoder().encode(process.env.JWT_SECRET || "fallback_secret_key")
+      new TextEncoder().encode(process.env.JWT_SECRET || "fallback_secret_key_medconnect_123!")
     );
-    return verified.payload.userId as string;
+    return verified.payload.id as string;
   } catch (err) {
     return null;
   }

@@ -14,7 +14,14 @@ function getPrismaClient() {
     throw new Error("DATABASE_URL is not set");
   }
 
-  const adapter = new PrismaPg({ connectionString: url });
+  const { Pool } = require("pg");
+  const pool = new Pool({
+    connectionString: url,
+    max: 10, // max 10 connections per serverless instance
+    connectionTimeoutMillis: 10000,
+    idleTimeoutMillis: 30000
+  });
+  const adapter = new PrismaPg(pool);
   const prisma = new PrismaClient({ adapter });
 
   if (process.env.NODE_ENV !== "production") {

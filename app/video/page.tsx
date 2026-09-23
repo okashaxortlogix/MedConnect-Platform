@@ -13,7 +13,6 @@ export default function VideoFeed() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
-  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchVideos();
@@ -34,28 +33,15 @@ export default function VideoFeed() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || (!videoUrl && !file)) return;
+    if (!title || !videoUrl) return;
 
     setUploading(true);
     try {
-      let finalVideoUrl = videoUrl;
-
-      if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const uploadRes = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-        if (!uploadRes.ok) throw new Error("File upload failed");
-        const uploadData = await uploadRes.json();
-        finalVideoUrl = uploadData.url;
-      }
 
       const res = await fetch("/api/videos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, videoUrl: finalVideoUrl })
+        body: JSON.stringify({ title, description, videoUrl })
       });
       if (res.ok) {
         setShowUploadModal(false);

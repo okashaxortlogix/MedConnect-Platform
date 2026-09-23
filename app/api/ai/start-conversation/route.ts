@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 import { hash } from "bcryptjs";
@@ -30,21 +31,29 @@ export async function POST(req: Request) {
     });
 
     if (!aiBot) {
-      const hashedPassword = await hash("random_secure_password_ai_bot_123", 10);
-      aiBot = await prisma.doctor.create({
-        data: {
-          fullName: "Medical Chatbot",
-          email: AI_EMAIL,
-          pmdcNumber: AI_PMDC,
-          phoneNumber: "0000000000",
-          password: hashedPassword,
-          isVerified: true,
-          verificationStatus: "VERIFIED",
-          specialization: "Artificial Intelligence",
-          bio: "I am an advanced Medical AI assistant powered by Google Gemini, here to help you with clinical queries and decision support.",
-          profileImage: "https://api.dicebear.com/7.x/bottts/svg?seed=MedicalAI&backgroundColor=4f46e5"
-        }
-      });
+      try {
+        const hashedPassword = await hash("random_secure_password_ai_bot_123", 10);
+        aiBot = await prisma.doctor.create({
+          data: {
+            fullName: "Medical Chatbot",
+            email: AI_EMAIL,
+            pmdcNumber: AI_PMDC,
+            phoneNumber: `AI-${crypto.randomUUID().slice(0, 8)}`, // Guaranteed unique
+            password: hashedPassword,
+            isVerified: true,
+            verificationStatus: "VERIFIED",
+            specialization: "Artificial Intelligence",
+            bio: "I am an advanced Medical AI assistant powered by Google Gemini, here to help you with clinical queries and decision support.",
+            profileImage: "https://api.dicebear.com/7.x/bottts/svg?seed=MedicalAI&backgroundColor=4f46e5"
+          }
+        });
+      } catch (err) {
+        // Fallback: If creation fails due to a unique constraint (e.g. AI-BOT PMDC already exists), fetch it
+        aiBot = await prisma.doctor.findFirst({
+          where: { OR: [{ email: AI_EMAIL }, { pmdcNumber: AI_PMDC }] }
+        });
+        if (!aiBot) throw err; // If still not found, throw the original error
+      }
     }
 
     // 2. Check if a conversation already exists between userId and aiBot.id

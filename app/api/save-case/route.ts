@@ -23,9 +23,18 @@ export async function POST(req: Request) {
 
     const { casePostId } = await req.json();
 
-    await prisma.savedCase.create({
-      data: { doctorId: userId, casePostId }
+    const targetCase = await prisma.casePost.findUnique({ where: { id: casePostId } });
+    if (!targetCase) return NextResponse.json({ message: "Case not found" }, { status: 404 });
+
+    const existingSave = await prisma.savedCase.findFirst({
+      where: { doctorId: userId, casePostId }
     });
+
+    if (!existingSave) {
+      await prisma.savedCase.create({
+        data: { doctorId: userId, casePostId }
+      });
+    }
 
     return NextResponse.json({ message: "Case saved" }, { status: 200 });
   } catch (error) {

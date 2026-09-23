@@ -91,7 +91,7 @@ export async function GET(req: Request, props: { params: Promise<{ id: string }>
 
     const isFriend = Boolean(isFollowing && authorFollowsMe);
 
-    if (casePost.doctor.isProfilePrivate && casePost.doctorId !== currentUser && !isFriend) {
+    if ((casePost.doctor.isProfilePrivate || casePost.privacy === "FRIENDS") && casePost.doctorId !== currentUser && !isFriend) {
       return NextResponse.json({ message: "This post is private" }, { status: 403 });
     }
 

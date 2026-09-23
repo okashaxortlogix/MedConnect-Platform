@@ -147,7 +147,7 @@ export async function GET(req: Request) {
           ...c,
           _count,
           doctor: {
-            id: c.doctor.id,
+            id: "",
             fullName: "Anonymous Doctor",
             specialization: null,
             profileImage: null,

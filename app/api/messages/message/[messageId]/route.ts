@@ -53,7 +53,6 @@ export async function PUT(req: Request, props: { params: Promise<{ messageId: st
     const dataToUpdate: any = {};
     if (content !== undefined) {
       dataToUpdate.content = content;
-      dataToUpdate.isEdited = true;
     }
     if (isPinned !== undefined) {
       dataToUpdate.isPinned = isPinned;

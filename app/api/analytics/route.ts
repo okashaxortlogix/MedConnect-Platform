@@ -70,7 +70,7 @@ export async function GET(req: Request) {
       ? Math.round(consultations.reduce((acc: number, c: any) => acc + (c.duration || 0), 0) / totalConsultations)
       : 0;
 
-    const totalCmeCredits = cmeCreditsObj.reduce((acc: number, cert: any) => acc + cert.course.credits, 0);
+    const totalCmeCredits = cmeCreditsObj.reduce((acc: number, cert: any) => acc + (cert.course?.credits || 0), 0);
 
     return NextResponse.json({
       casesPosted,
