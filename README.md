@@ -110,7 +110,7 @@ MedConnect-Platform/
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/muhammadokashapak/MedConnect-Platform.git
+git clone https://github.com/okashaxortlogix/MedConnect-Platform.git
 cd MedConnect-Platform
 
 npm install
@@ -143,7 +143,7 @@ Open `http://localhost:3000` to access the MedConnect platform.
 **Muhammad Okasha**  
 *AI & Medical Technology Software Architect*  
 - **GitHub:** [@muhammadokashapak](https://github.com/muhammadokashapak)
-- **Repository:** [MedConnect-Platform](https://github.com/muhammadokashapak/MedConnect-Platform)
+- **Repository:** [MedConnect-Platform](https://github.com/okashaxortlogix/MedConnect-Platform)
 
 ---
 

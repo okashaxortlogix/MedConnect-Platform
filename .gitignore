@@ -47,3 +47,20 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# System & Build Ignores
+.env.local
+*.log
+.terraform/
+*.exe
+*.pack
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+dist/
+build/
+*.apk
+books/
+*.db
+*.onnx
